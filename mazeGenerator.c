@@ -60,9 +60,52 @@ Maze* initializeMaze(Maze *maze){
     return maze;
 }
 
+/* print the maze
+void printMaze(Maze *maze){
+    for (int i = 0;i<maze->width;i++){
+        for (int j = 0;j<maze->height;j++){
+            printf("%d ",maze->mazeTab[i*mazeHeight+j]->north);
+        }
+        printf("\n");
+    }
+}
+*/
+
+void printMaze(Maze *maze) {
+    for (int i = 0; i < maze->height; i++) {
+        // Top line north direction
+        for (int j = 0; j < maze->width; j++) {
+            int index = i * maze->width + j;
+            printf(" ");
+            printf(maze->mazeTab[index]->north == 1 ? "_" : " ");
+        }
+        printf("\n");
+
+        // west line , space , est line
+        for (int j = 0; j < maze->width; j++) {
+            int index = i * maze->width + j;
+            printf(maze->mazeTab[index]->west == 1 ? "|" : " "); // west wall
+            printf(" ");  // space
+        }
+        printf("|\n");  // Right wall end of the line
+
+        // south line
+        if (i == maze->height - 1) {
+            for (int j = 0; j < maze->width; j++) {
+                int index = i * maze->width + j;
+                printf(maze->mazeTab[index]->south == 1 ? " _" : "  ");
+            }
+            printf("\n");
+        }
+    }
+}
+
+
 int main(){
     Maze *maze;
     maze = initializeMaze(maze);
+    printMaze(maze);
+
 
 
     return 0;
