@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdlib.h>
+#include <time.h>
 
 const int mazeHeight = 10; // hauteur
 const int mazeWidht = 10; // largeur
@@ -90,6 +92,15 @@ void printMaze(Maze *maze) {
     }
 }
 
+/*
+ * input : Ø
+ * outpout : integer between 1 and 4
+ */
+int randomDirection(){
+    // Set generator's seed to null
+    srand(time(NULL));
+    return (rand() % 4) + 1;
+}
 
 int main(){
     Maze *maze;
@@ -97,6 +108,6 @@ int main(){
     printMaze(maze);
 
 
-
+    free(maze);
     return 0;
 }
