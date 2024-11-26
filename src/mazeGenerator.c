@@ -11,10 +11,11 @@ Define cell of the maze
 1 if wall 0 if not
 x,y are the coordonates of the cell
 */
-typedef struct{
+typedef struct {
     int north;
     int west;
     char *value;
+    int visited;
 } Cell;
 
 
@@ -23,6 +24,11 @@ typedef struct {
     int height;
     Cell **mazeTab;
 } Maze;
+
+typedef struct _Stack{
+    Cell *cell;
+    struct _Stack *next;
+} Stack;
 
 
 /*
@@ -56,6 +62,7 @@ Maze* initializeMaze(Maze *maze){
                 }
                 maze->mazeTab[index]->north = maze->mazeTab[index]->west = 1;
                 maze->mazeTab[index]->value = " ";
+                maze->mazeTab[index]->visited = 0;
             }
         }
     }
@@ -102,11 +109,45 @@ int randomDirection(){
     return (rand() % 4) + 1;
 }
 
+/*
+ * push cell in the stack
+ * input : stack and cell
+ * output : Ø
+ */
+void push(Stack **stack,Cell *cell){
+    Stack *newNode = (Stack *)malloc(sizeof(Stack));
+    if (!newNode) {
+        perror("Erreur d'allocation mémoire pour la pile");
+        exit(1);
+    }
+    newNode->cell = cell;
+    newNode->next = *stack; // Le nouvel élément pointe vers l'ancien sommet
+    *stack = newNode;
+}
+
+/*
+ * delete first cell of the stack
+ * input : stack
+ * output : 1 if it worked, 0 if not
+ */
+int pop(Stack **stack){
+    if (*stack == NULL) {
+        return 0;
+    }
+    Stack *temp = *stack;
+    *stack = (*stack)->next;
+    free(temp);
+    return 1;
+}
+
+void generateMaze(Maze *maze){
+
+}
+
 int main(){
-    Maze *maze;
+    Maze *maze = NULL;
     maze = initializeMaze(maze);
     printMaze(maze);
-
 
     free(maze);
     return 0;
