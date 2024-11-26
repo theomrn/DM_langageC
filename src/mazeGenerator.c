@@ -140,6 +140,24 @@ int pop(Stack **stack){
     return 1;
 }
 
+/*
+ * check if the stack is empty
+ * input : stack
+ * output : 0 if empty, 1 if not
+ */
+int empty(Stack *stack){
+    return (stack) ? 1 : 0;
+}
+
+void freeStack(Stack *stack){
+    Stack *temp = stack;
+    while (stack){
+        stack = stack->next;
+        free(temp);
+        temp = stack;
+    }
+}
+
 void generateMaze(Maze *maze){
 
 }
