@@ -1,37 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdlib.h>
 #include <time.h>
-
-const int mazeHeight = 10; // hauteur
-const int mazeWidht = 10; // largeur
-
-/* 
-Define cell of the maze
-1 if wall 0 if not
-x,y are the coordonates of the cell
-*/
-typedef struct {
-    int north;
-    int west;
-    char *value;
-    int visited;
-    int x;
-    int y;
-} Cell;
-
-
-typedef struct {
-    int width;
-    int height;
-    Cell **mazeTab;
-} Maze;
-
-typedef struct _Stack{
-    Cell *cell;
-    struct _Stack *next;
-} Stack;
-
+#include "../includes/mazeGenerator.h"
 
 /*
 create and alocate matrice for the maze and initialize every cell with all wall at 1
@@ -63,7 +33,7 @@ Maze* initializeMaze(Maze *maze){
                     exit(1);
                 }
                 maze->mazeTab[index]->north = maze->mazeTab[index]->west = 1;
-                maze->mazeTab[index]->value = "x";
+                maze->mazeTab[index]->value = " ";
                 maze->mazeTab[index]->visited = 0;
                 maze->mazeTab[index]->x = i;
                 maze->mazeTab[index]->y = j;
@@ -75,7 +45,7 @@ Maze* initializeMaze(Maze *maze){
     return maze;
 }
 
-void printMaze(Maze *maze) {
+void printMaze(Maze *maze){
     int i = 0,j = 0;
     int index = i * maze->width + j;
     for (i=0;i<mazeHeight;i++){
@@ -83,7 +53,7 @@ void printMaze(Maze *maze) {
             for (j=0;j<mazeWidht;j++){
                 index = i * maze->width + j;
                 if (k == 0){
-                    printf((maze->mazeTab[index]->north)? "   _" : "   ");
+                    printf((maze->mazeTab[index]->north)? "-+--" : "   ");
                 }
                 else{
                     printf((maze->mazeTab[index]->west)? " | " : "   ");
@@ -97,7 +67,7 @@ void printMaze(Maze *maze) {
         printf((i!=mazeHeight-1)? " |\n" : "  \n");
     }
     for (j=0;j<mazeWidht;j++){
-        printf("   _");
+        printf("----");
     }
 }
 
@@ -140,6 +110,11 @@ int empty(Stack *stack){
     return stack == NULL;
 }
 
+/*
+ * free the memory alocated for the stack
+ * input : stack
+ * output : Ø
+ */
 void freeStack(Stack *stack){
     Stack *temp = stack;
     while (stack){
@@ -149,19 +124,29 @@ void freeStack(Stack *stack){
     }
 }
 
-void removeWall(Cell *current, Cell *neighbor, int direction) {
-    if (direction == 0) { // Bas
+/*
+ * remove the wall between a cell and it's neighbor
+ * input : direction
+ * output : Ø
+ */
+void removeWall(Cell *current, Cell *neighbor, int direction){
+    if (direction == 0) { // under
         neighbor->north = 0;
-    } else if (direction == 1) { // Haut
+    } else if (direction == 1) { // above
         current->north = 0;
-    } else if (direction == 2) { // Droite
+    } else if (direction == 2) { // right
         neighbor->west = 0;
-    } else if (direction == 3) { // Gauche
+    } else if (direction == 3) { // left
         current->west = 0;
     }
 }
 
-int chooseRandomDirection(int unvisitedDirection[]) {
+/*
+ * choose a random direction
+ * input : tab with valid direction
+ * output : random valid direction
+ */
+int chooseRandomDirection(int unvisitedDirection[]){
     int possibleDirections[4];
     int count = 0;
     for (int d = 0; d < 4; d++) {
@@ -173,6 +158,11 @@ int chooseRandomDirection(int unvisitedDirection[]) {
     return possibleDirections[rand() % count];
 }
 
+/*
+ * generate a perfect maze
+ * input : maze
+ * output : Ø
+ */
 void generateMaze(Maze *maze){
     int i = 0, j = 0;
     int index = 0;
