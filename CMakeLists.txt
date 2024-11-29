@@ -5,4 +5,8 @@ set(CMAKE_C_STANDARD 11)
 
 add_executable(DM
         src/main.c
-        src/mazeGenerator.c)
+        src/mazeGenerator.c
+        includes/mazeGenerator.h
+        src/mazeSolver.c
+        includes/maze.h
+        src/maze.c)
