@@ -9,4 +9,14 @@ add_executable(DM
         includes/mazeGenerator.h
         src/mazeSolver.c
         includes/maze.h
-        src/maze.c)
+        src/maze.c
+        includes/mazeSolver.h)
+
+find_package(raylib REQUIRED)
+
+if (raylib_FOUND)
+    include_directories(${raylib_INCLUDE_DIRS})
+    target_link_libraries(DM ${raylib_LIBRARIES})
+else()
+    message(FATAL_ERROR "Raylib n'a pas été trouvé.")
+endif()

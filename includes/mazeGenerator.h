@@ -2,7 +2,6 @@
 #define MAZE_GENERATOR_H
 
 #include "maze.h"
-#include "mazeGenerator.h"
 
 typedef struct _Stack{
     Cell *cell;
