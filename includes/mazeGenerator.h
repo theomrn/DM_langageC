@@ -22,4 +22,6 @@ int chooseRandomDirection(int unvisitedDirection[]);
 
 void generateMaze(Maze *maze);
 
+void generateMaze2(Maze *maze);
+
 #endif
