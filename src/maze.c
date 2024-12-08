@@ -10,53 +10,49 @@ output : triple pointer of the alocated memory of the maze
 Maze* initializeMaze(Maze *maze,int mazeHeight,int mazeWidth){
     maze = (Maze *)malloc(sizeof(Maze));
     if (!maze){
-        exit(1);
+        perror("erreur maze");
+        exit(EXIT_FAILURE);
     }
     else {
         maze->height = mazeHeight;
         maze->width = mazeWidth;
-        Cell **newTab = (Cell **)malloc((maze->width * maze->height) * sizeof(Cell *));
-        if (!newTab) {
+        maze->mazeTab = (Cell **)malloc(maze->height * sizeof(Cell *));
+        if (!maze->mazeTab){
             perror("erreur alocation mazeTab");
-            free(maze);
-            exit(1);
+            exit(EXIT_FAILURE);
         }
-        maze->mazeTab = newTab;
-        int index;
-        for (int i = 0;i<maze->width;i++){
-            for (int j = 0;j<mazeHeight;j++){
-                index = i*maze->width+j;
-                maze->mazeTab[index] = (Cell *)malloc(sizeof(Cell));
-                if (!maze->mazeTab[index]) {
-                    perror("erreur alocation mazeCell");
-                    exit(1);
-                }
-                maze->mazeTab[index]->north = maze->mazeTab[index]->west = 1;
-                maze->mazeTab[index]->value = " ";
-                maze->mazeTab[index]->visited = 0;
-                maze->mazeTab[index]->x = i;
-                maze->mazeTab[index]->y = j;
+        for (int i = 0;i<maze->height;i++){
+            maze->mazeTab[i] = (Cell *)malloc(maze->width * sizeof(Cell));
+            if (!maze->mazeTab[i]){
+                perror("erreur alocation mazeTab");
+                exit(EXIT_FAILURE);
+            }
+            for (int j = 0;j<maze->width;j++){
+                maze->mazeTab[i][j].north = 1;
+                maze->mazeTab[i][j].west = 1;
+                maze->mazeTab[i][j].value = " ";
+                maze->mazeTab[i][j].visited = 0;
+                maze->mazeTab[i][j].i = i;
+                maze->mazeTab[i][j].j = j;
             }
         }
-        maze->mazeTab[0]->west = 0;
+        maze->mazeTab[0][0].west = 0;
     }
 
     return maze;
 }
 
 void printMaze(Maze *maze){
-    int i = 0,j = 0;
-    int index = i * maze->width + j;
+    int i,j,k;
     for (i=0;i<maze->height;i++){
-        for (int k=0;k<2;k++){
+        for (k=0;k<2;k++){
             for (j=0;j<maze->width;j++){
-                index = i * maze->width + j;
                 if (k == 0){
-                    printf((maze->mazeTab[index]->north)? "-+--" : "   ");
+                    printf((maze->mazeTab[i][j].north)? "-+--" : "    ");
                 }
                 else{
-                    printf((maze->mazeTab[index]->west)? " | " : "   ");
-                    printf("%s",maze->mazeTab[index]->value);
+                    printf((maze->mazeTab[i][j].west)? " | " : "   ");
+                    printf("%s",maze->mazeTab[i][j].value);
                 }
             }
             if (j != (maze->width-1) && k!=1){

@@ -16,6 +16,7 @@ void printStack(Stack *stack){
 
 void backTrackingSolver(Maze *maze){
     int i = 0, j = 0;
+
     int index = 0;
     for (i=0;i<maze->height;i++){
         for (j=0;j<maze->width;j++){
@@ -40,8 +41,8 @@ void backTrackingSolver(Maze *maze){
         Cell *current = pop(&stack);
         if (!current) exit(EXIT_FAILURE);
         current->value = "x";
-        i = current->x;
-        j = current->y;
+        i = current->i;
+        j = current->j;
         index = i * maze->width + j;
 
         // reset the tab
@@ -96,16 +97,16 @@ void backTrackingSolver(Maze *maze){
             neighbor->visited = 1;
             push(&stack, current);  // push actual cell
             push(&stack, neighbor); // push neighbor cell
-            i = neighbor->x;
-            j = neighbor->y;
+            i = neighbor->i;
+            j = neighbor->j;
             //printf("stack : \n");
             //printStack(stack);
         }
         else {
             //current->value = " ";
             current = pop(&stack);
-            i = current->x;
-            j = current->y;
+            i = current->i;
+            j = current->j;
             printf("stack poped : \n");
             printStack(stack);
         }

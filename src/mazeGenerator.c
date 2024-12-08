@@ -80,7 +80,6 @@ void removeWall(Cell *current, Cell *neighbor, int direction){
  * output : random valid direction
  */
 int chooseRandomDirection(int unvisitedDirection[]){
-    srand(time(NULL));
     int possibleDirections[4];
     for (int j = 0;j<4;j++){
         possibleDirections[j] = 0;
@@ -92,8 +91,10 @@ int chooseRandomDirection(int unvisitedDirection[]){
         }
     }
     if (count == 0) return -1; // no valid direction
-    if (count == 1) return 0;
-    return possibleDirections[rand() % (count-1)];
+    int index = rand() % count;
+    int result = possibleDirections[index];
+    // printf("%d \n",result);
+    return result;
 }
 
 int *getPossibleDirection(Maze *maze,int i,int j){
@@ -102,9 +103,9 @@ int *getPossibleDirection(Maze *maze,int i,int j){
         perror("erreur alocation mémoire possible direction");
         exit(EXIT_FAILURE);
     }
-    Cell *cell = maze->mazeTab[i * maze->height + j];
+    Cell *cell = &maze->mazeTab[i][j];
     if ((i + 1) < maze->height){
-        if (maze->mazeTab[(i+1)*maze->height + j]->north){
+        if (maze->mazeTab[i+1][j].north){
             possibleDirection[0] = 1;
         }
         else {
@@ -112,7 +113,7 @@ int *getPossibleDirection(Maze *maze,int i,int j){
         }
     }
     if ((i - 1) >= 0){
-        if (maze->mazeTab[(i-1)*maze->height + j]->north){
+        if (maze->mazeTab[i-1][j].north){
             possibleDirection[1] = 1;
         }
         else {
@@ -120,7 +121,7 @@ int *getPossibleDirection(Maze *maze,int i,int j){
         }
     }
     if ((j+1) < maze->width){
-        if (maze->mazeTab[i*maze->height + j + 1]->north){
+        if (maze->mazeTab[i][j+1].north){
             possibleDirection[2] = 1;
         }
         else {
@@ -128,7 +129,7 @@ int *getPossibleDirection(Maze *maze,int i,int j){
         }
     }
     if ((j-1) >= 0){
-        if (maze->mazeTab[i*maze->height + j - 1]->north){
+        if (maze->mazeTab[i][j-1].north){
             possibleDirection[3] = 1;
         }
         else {
@@ -146,71 +147,77 @@ int *getPossibleDirection(Maze *maze,int i,int j){
  */
 void generateMaze(Maze *maze){
     int i = 0, j = 0;
-    int index = 0;
-    int *unvisitedDirection = NULL;
+    int unvisitedDirection[5] = {0,0,0,0,0};
     int direction;
-    maze->mazeTab[index]->visited = 1;
+    maze->mazeTab[i][j].visited = 1;
     Stack *stack = NULL;
     stack = (Stack *)malloc(sizeof(Stack));
     if (!stack){
-        exit(0);
+        perror("erreur stack");
+        exit(EXIT_FAILURE);
     }
-    stack->next = NULL;
-    push(&stack,maze->mazeTab[index]);
+    push(&stack,&maze->mazeTab[i][j]);
     while (!empty(stack)){
         Cell *current = pop(&stack);
-        if (current == NULL) {
+        if (current == NULL){
             break;
         }
-        i = current->x;
-        j = current->y;
-        index = i * maze->width + j;
+        i = current->i;
+        j = current->j;
 
         // reset the tab
-        unvisitedDirection = getPossibleDirection(maze,i,j);
+        unvisitedDirection[0] = unvisitedDirection[1] = unvisitedDirection[2] = unvisitedDirection[3] = unvisitedDirection[4] = 0;
 
+        if ((i+1) < maze->height && (maze->mazeTab[i+1][j].visited == 0)){
+            // check if the under cell  actual cell is unvisited
+            unvisitedDirection[0] = 1;
+            unvisitedDirection[4]++;
+        }
+        if ((i > 0) && (maze->mazeTab[i-1][j].visited == 0)){
+            // check if the top cell actual cell is unvisited
+            unvisitedDirection[1] = 1;
+            unvisitedDirection[4]++;
+        }
+        if ((j+1) < maze->height && (maze->mazeTab[i][j+1].visited == 0)){
+            // check if the right cell actual cell is unvisited
+            unvisitedDirection[2] = 1;
+            unvisitedDirection[4]++;
+        }
+        if ((j > 0) && (maze->mazeTab[i][j-1].visited == 0)){
+            // check if the left cell actual cell is unvisited
+            unvisitedDirection[3] = 1;
+            unvisitedDirection[4]++;
+        }
         if (unvisitedDirection[4] > 0) {
-            // choose a random valid direction
+            push(&stack, current);  // Remettre la cellule actuelle
+            // Choisissez une direction aléatoire valide
             direction = chooseRandomDirection(unvisitedDirection);
-            // printf("direction : %d\n",direction);
 
             Cell *neighbor = NULL;
-            printf("dir %d\n",direction);
             switch (direction) {
-                case 0: // bottom
-                    neighbor = maze->mazeTab[(i + 1) * maze->width + j];
-                    removeWall(current, neighbor, direction);
-                    i++;
+                case 0: // Bas
+                    neighbor = &maze->mazeTab[++i][j];
+                    neighbor->north = 0;
                     break;
-                case 1: // top
-                    neighbor = maze->mazeTab[(i - 1) * maze->width + j];
-                    removeWall(current, neighbor, direction);
-                    i--;
+                case 1: // Haut
+                    neighbor = &maze->mazeTab[--i][j];
+                    current->north = 0;
                     break;
-                case 2: // right
-                    neighbor = maze->mazeTab[i * maze->width + (j + 1)];
-                    removeWall(current, neighbor, direction);
-                    j++;
+                case 2: // Droite
+                    neighbor = &maze->mazeTab[i][++j];
+                    neighbor->west = 0;
                     break;
-                case 3: // left
-                    neighbor = maze->mazeTab[i * maze->width + (j - 1)];
-                    removeWall(current, neighbor, direction);
-                    j--;
+                case 3: // Gauche
+                    neighbor = &maze->mazeTab[i][--j];
+                    current->west = 0;
                     break;
                 default:
                     break;
             }
 
             neighbor->visited = 1;
-            push(&stack, current);  // push actual cell
-            push(&stack, neighbor); // push neighbor cell
+            push(&stack, neighbor); // Empilez la cellule voisine
         }
-        else {
-            current = pop(&stack);
-            i = current->x;
-            j = current->y;
-        }
-
     }
     freeStack(stack); // free memory allocated for the stack
 }
