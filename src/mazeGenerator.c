@@ -220,6 +220,11 @@ void generateMaze(Maze *maze){
         }
     }
     freeStack(stack); // free memory allocated for the stack
+    for (i=0;i<maze->height;i++){
+        for (j=0;j<maze->width;j++){
+            maze->mazeTab[i][j].visited = 0;
+        }
+    }
 }
 /*
 int main(){

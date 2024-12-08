@@ -14,9 +14,9 @@ int main(){
     generateMaze(maze);
     printf("\nmaze generated : \n");
     printMaze(maze);
-    // printf("\nmaze solver : \n");
-    // backTrackingSolver(maze);
-    // printMaze(maze);
+    printf("\nmaze solver : \n");
+    backTrackingSolver(maze);
+    printMaze(maze);
     free(maze);
     return 1;
 }
