@@ -16,6 +16,7 @@ void printStack(Stack *stack){
 
 void backTrackingSolver(Maze *maze){
     int i = 0, j = 0;
+
     int index = 0;
     for (i=0;i<maze->height;i++){
         for (j=0;j<maze->width;j++){

@@ -93,7 +93,7 @@ int chooseRandomDirection(int unvisitedDirection[]){
     if (count == 0) return -1; // no valid direction
     int index = rand() % count;
     int result = possibleDirections[index];
-    printf("%d \n",result);
+    // printf("%d \n",result);
     return result;
 }
 
@@ -103,9 +103,9 @@ int *getPossibleDirection(Maze *maze,int i,int j){
         perror("erreur alocation mémoire possible direction");
         exit(EXIT_FAILURE);
     }
-    Cell *cell = maze->mazeTab[i * maze->height + j];
+    Cell *cell = &maze->mazeTab[i][j];
     if ((i + 1) < maze->height){
-        if (maze->mazeTab[(i+1)*maze->height + j]->north){
+        if (maze->mazeTab[i+1][j].north){
             possibleDirection[0] = 1;
         }
         else {
@@ -113,7 +113,7 @@ int *getPossibleDirection(Maze *maze,int i,int j){
         }
     }
     if ((i - 1) >= 0){
-        if (maze->mazeTab[(i-1)*maze->height + j]->north){
+        if (maze->mazeTab[i-1][j].north){
             possibleDirection[1] = 1;
         }
         else {
@@ -121,7 +121,7 @@ int *getPossibleDirection(Maze *maze,int i,int j){
         }
     }
     if ((j+1) < maze->width){
-        if (maze->mazeTab[i*maze->height + j + 1]->north){
+        if (maze->mazeTab[i][j+1].north){
             possibleDirection[2] = 1;
         }
         else {
@@ -129,7 +129,7 @@ int *getPossibleDirection(Maze *maze,int i,int j){
         }
     }
     if ((j-1) >= 0){
-        if (maze->mazeTab[i*maze->height + j - 1]->north){
+        if (maze->mazeTab[i][j-1].north){
             possibleDirection[3] = 1;
         }
         else {
@@ -147,72 +147,6 @@ int *getPossibleDirection(Maze *maze,int i,int j){
  */
 void generateMaze(Maze *maze){
     int i = 0, j = 0;
-    int index = 0;
-    int *unvisitedDirection = NULL;
-    int direction;
-    maze->mazeTab[index]->visited = 1;
-    Stack *stack = NULL;
-    stack = (Stack *)malloc(sizeof(Stack));
-    if (!stack){
-        perror("erreur alocation stack");
-        exit(0);
-    }
-    stack->next = NULL;
-    push(&stack,maze->mazeTab[index]);
-    while (!empty(stack)){
-        Cell *current = pop(&stack);
-        if (!current) {
-            break;
-        }
-        i = current->i;
-        j = current->j;
-        index = i * maze->width + j;
-
-        // reset the tab
-        unvisitedDirection = getPossibleDirection(maze,i,j);
-
-        if (unvisitedDirection[4] > 0) {
-            // choose a random valid direction
-            direction = chooseRandomDirection(unvisitedDirection);
-            // printf("direction : %d\n",direction);
-
-            Cell *neighbor = NULL;
-            printf("dir %d\n",direction);
-            switch (direction) {
-                case 0: // bottom
-                    neighbor = maze->mazeTab[(i + 1) * maze->width + j];
-                    removeWall(current, neighbor, direction);
-                    i++;
-                    break;
-                case 1: // top
-                    neighbor = maze->mazeTab[(i - 1) * maze->width + j];
-                    removeWall(current, neighbor, direction);
-                    i--;
-                    break;
-                case 2: // right
-                    neighbor = maze->mazeTab[i * maze->width + (j + 1)];
-                    removeWall(current, neighbor, direction);
-                    j++;
-                    break;
-                case 3: // left
-                    neighbor = maze->mazeTab[i * maze->width + (j - 1)];
-                    removeWall(current, neighbor, direction);
-                    j--;
-                    break;
-                default:
-                    break;
-            }
-
-            neighbor->visited = 1;
-            push(&stack, current);  // push actual cell
-            push(&stack, neighbor); // push neighbor cell
-        }
-    }
-    freeStack(stack); // free memory allocated for the stack
-}
-
-void generateMaze2(Maze *maze){
-    int i = 0, j = 0;
     int unvisitedDirection[5] = {0,0,0,0,0};
     int direction;
     maze->mazeTab[i][j].visited = 1;
@@ -225,7 +159,7 @@ void generateMaze2(Maze *maze){
     push(&stack,&maze->mazeTab[i][j]);
     while (!empty(stack)){
         Cell *current = pop(&stack);
-        if (current == NULL) {
+        if (current == NULL){
             break;
         }
         i = current->i;
@@ -233,13 +167,13 @@ void generateMaze2(Maze *maze){
 
         // reset the tab
         unvisitedDirection[0] = unvisitedDirection[1] = unvisitedDirection[2] = unvisitedDirection[3] = unvisitedDirection[4] = 0;
+
         if ((i+1) < maze->height && (maze->mazeTab[i+1][j].visited == 0)){
             // check if the under cell  actual cell is unvisited
             unvisitedDirection[0] = 1;
             unvisitedDirection[4]++;
         }
         if ((i > 0) && (maze->mazeTab[i-1][j].visited == 0)){
-            printf("here \n");
             // check if the top cell actual cell is unvisited
             unvisitedDirection[1] = 1;
             unvisitedDirection[4]++;
@@ -251,7 +185,6 @@ void generateMaze2(Maze *maze){
         }
         if ((j > 0) && (maze->mazeTab[i][j-1].visited == 0)){
             // check if the left cell actual cell is unvisited
-            printf("here2 \n");
             unvisitedDirection[3] = 1;
             unvisitedDirection[4]++;
         }
@@ -263,26 +196,20 @@ void generateMaze2(Maze *maze){
             Cell *neighbor = NULL;
             switch (direction) {
                 case 0: // Bas
-                    printf("dir 0 , i : %d j : %d \n",i,j);
                     neighbor = &maze->mazeTab[++i][j];
-                    // removeWall(current, &maze->mazeTab[i][j], 0);
                     neighbor->north = 0;
                     break;
                 case 1: // Haut
-                    printf("dir 1 , i : %d j : %d \n",i,j);
                     neighbor = &maze->mazeTab[--i][j];
-                    removeWall(current, neighbor, 1);
+                    current->north = 0;
                     break;
                 case 2: // Droite
-                    printf("dir 2 , i : %d j : %d \n",i,j);
                     neighbor = &maze->mazeTab[i][++j];
-                    // removeWall(current, &maze->mazeTab[i][j], 2);
                     neighbor->west = 0;
                     break;
                 case 3: // Gauche
-                    printf("dir 3 , i : %d j : %d \n",i,j);
                     neighbor = &maze->mazeTab[i][--j];
-                    removeWall(current, neighbor, 3);
+                    current->west = 0;
                     break;
                 default:
                     break;

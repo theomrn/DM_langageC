@@ -16,13 +16,13 @@ Maze* initializeMaze(Maze *maze,int mazeHeight,int mazeWidth){
     else {
         maze->height = mazeHeight;
         maze->width = mazeWidth;
-        maze->mazeTab = malloc(maze->height * sizeof(Cell *));
+        maze->mazeTab = (Cell **)malloc(maze->height * sizeof(Cell *));
         if (!maze->mazeTab){
             perror("erreur alocation mazeTab");
             exit(EXIT_FAILURE);
         }
         for (int i = 0;i<maze->height;i++){
-            maze->mazeTab[i] = (Cell *)malloc(sizeof(Cell));
+            maze->mazeTab[i] = (Cell *)malloc(maze->width * sizeof(Cell));
             if (!maze->mazeTab[i]){
                 perror("erreur alocation mazeTab");
                 exit(EXIT_FAILURE);

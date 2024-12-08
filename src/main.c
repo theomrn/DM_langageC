@@ -11,8 +11,7 @@ int main(){
 
     Maze *maze = NULL;
     maze = initializeMaze(maze,mazeHeigth,mazeWidth);
-    // printMaze(maze);
-    generateMaze2(maze);
+    generateMaze(maze);
     printf("\nmaze generated : \n");
     printMaze(maze);
     // printf("\nmaze solver : \n");
