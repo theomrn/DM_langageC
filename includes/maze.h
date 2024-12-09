@@ -22,7 +22,7 @@ typedef struct {
     Cell **mazeTab;
 } Maze;
 
-Maze* initializeMaze(Maze *maze,int mazeHeight,int mazeWidth);
+Maze* initializeMaze(int mazeHeight,int mazeWidth);
 
 void printMaze(Maze *maze);
 
