@@ -32,6 +32,12 @@ int main(){
     const Color wallColor = WHITE; // Couleur des murs
     const Color cellColor = GREEN; // Couleur pour les cellules contenant "x"
 
+    Stack *stack = NULL;
+
+    int solving = 0;
+    int end = 0;
+    Stack *temp = NULL;
+
 
     // Boucle principale
     while (!WindowShouldClose()) { // Tant que l'utilisateur ne ferme pas la fenêtre
@@ -48,11 +54,29 @@ int main(){
             free(maze);
             maze = initializeMaze(mazeHeigth,mazeWidth);
             generateMaze(maze);
+            solving = 0;
+            end = 0;
+            freeStack(stack);
+            stack = NULL;
         }
 
         if (IsKeyPressed(KEY_S)) {
             // Appel de la fonction generateMaze
-            backTrackingSolver(maze);
+            // backTrackingSolver(maze);
+            solving = 1;
+        }
+
+        if (IsKeyPressed(KEY_Z)){
+            solving = 1;
+        }
+
+        if (solving && !end){
+            DrawText("solving",20,20,20,LIGHTGRAY);
+            stack = StepByStepBackTrackingSolver(maze,stack,&end);
+        }
+
+        if (end) {
+            DrawText("Labyrinthe résolu !", 200, 100, 50, GREEN);
         }
 
         for (int i = 0; i < maze->height; i++) {
@@ -83,7 +107,7 @@ int main(){
             int y = maze->height * cellSize;
             DrawRectangle(x + 225, y - wallThickness + 150, cellSize, wallThickness, wallColor); // Mur du bas
         }
-        for (int i = 0; i < maze->height; i++) {
+        for (int i = 0; i < maze->height-1; i++) {
             int x = maze->width * cellSize;
             int y = i * cellSize;
             DrawRectangle(x - wallThickness + 225, y + 150, wallThickness, cellSize, wallColor); // Mur de droite
@@ -96,5 +120,6 @@ int main(){
     // Fermeture et nettoyage
     CloseWindow(); // Ferme la fenêtre et libère les ressources
     free(maze);
+    freeStack(stack);
     return 1;
 }

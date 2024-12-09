@@ -5,8 +5,11 @@
 #define MAZE_SOLVER_H
 
 #include "maze.h"
+#include "../includes/mazeGenerator.h"
 
 void backTrackingSolver(Maze *maze);
+
+Stack* StepByStepBackTrackingSolver(Maze *maze,Stack *stack,int *end);
 
 #endif
 
