@@ -11,8 +11,8 @@ typedef struct {
     int west;
     char *value;
     int visited;
-    int x;
-    int y;
+    int i;
+    int j;
 } Cell;
 
 
