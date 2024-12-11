@@ -7,8 +7,8 @@ create and alocate matrice for the maze and initialize every cell with all wall 
 input : Width and Height of the maze
 output : triple pointer of the alocated memory of the maze
 */
-Maze* initializeMaze(Maze *maze,int mazeHeight,int mazeWidth){
-    maze = (Maze *)malloc(sizeof(Maze));
+Maze* initializeMaze(int mazeHeight,int mazeWidth){
+    Maze *maze = (Maze *)malloc(sizeof(Maze));
     if (!maze){
         perror("erreur maze");
         exit(EXIT_FAILURE);
