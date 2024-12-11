@@ -28,7 +28,7 @@ int main(){
 
     SetTargetFPS(60); // Définit le nombre d'images par seconde (FPS)
     const int wallThickness = 1; // Épaisseur des murs
-    const int cellSize = 8;
+    int cellSize = 8;
     const Color wallColor = WHITE; // Couleur des murs
     const Color cellColor = GREEN; // Couleur pour les cellules contenant "x"
 
@@ -38,6 +38,10 @@ int main(){
     int end = 0;
     Stack *temp = NULL;
 
+    double startTime = 0.0;
+    double elapsedTime = 0.0;
+    bool timerRunning = false;
+
 
     // Boucle principale
     while (!WindowShouldClose()) { // Tant que l'utilisateur ne ferme pas la fenêtre
@@ -46,10 +50,42 @@ int main(){
 
         ClearBackground(BLACK); // Efface l'écran avec un fond blanc
 
-        DrawText("Appuyez sur ESPACE pour générer un nouveau labyrinthe. \nAppuyez sur S pour le resoudre", 100, 50, 20, LIGHTGRAY); // Texte à l'écran
+        DrawText("pour générer un nouveau labyrinthe \n(10x10 = A, 30x30 = Z , 50x50 = E , 100x100 = R ) . \nAppuyez sur S pour le resoudre ", 50, 50, 20, LIGHTGRAY); // Texte à l'écran
+
+        if (IsKeyPressed(KEY_Q)){
+            DrawText("touche A appuyer",20,20,20,LIGHTGRAY);
+            mazeHeigth = 10;
+            mazeWidth = 10;
+            cellSize = 40;
+            free(maze);
+            maze = initializeMaze(mazeHeigth,mazeWidth);
+            generateMaze(maze);
+            solving = 0;
+            end = 0;
+            freeStack(stack);
+            stack = NULL;
+        }
+
+        if (IsKeyPressed(KEY_W)){
+            mazeHeigth = 30;
+            mazeWidth = 30;
+            cellSize = 13;
+            free(maze);
+            maze = initializeMaze(mazeHeigth,mazeWidth);
+            generateMaze(maze);
+            solving = 0;
+            end = 0;
+            freeStack(stack);
+            stack = NULL;
+        }
+
+
 
         // Vérifiez si l'utilisateur appuie sur la barre d'espace
-        if (IsKeyPressed(KEY_SPACE)) {
+        if (IsKeyPressed(KEY_E)) {
+            mazeHeigth = 50;
+            mazeWidth = 50;
+            cellSize = 8;
             // Appel de la fonction generateMaze
             free(maze);
             maze = initializeMaze(mazeHeigth,mazeWidth);
@@ -64,20 +100,46 @@ int main(){
             // Appel de la fonction generateMaze
             // backTrackingSolver(maze);
             solving = 1;
+            timerRunning = true;
+            startTime = GetTime();
+        }
+
+        if (IsKeyPressed(KEY_R)) {
+            solving = false;
+            startTime = 0.0;
+            mazeHeigth = 100;
+            mazeWidth = 100;
+            cellSize = 4;
+            // Appel de la fonction generateMaze
+            free(maze);
+            maze = initializeMaze(mazeHeigth,mazeWidth);
+            generateMaze(maze);
+            solving = 0;
+            end = 0;
+            freeStack(stack);
+            stack = NULL;
         }
 
         if (IsKeyPressed(KEY_Z)){
             solving = 1;
         }
 
+        if (timerRunning) {
+            elapsedTime = GetTime() - startTime;
+        }
+
         if (solving && !end){
-            DrawText("solving",20,20,20,LIGHTGRAY);
             stack = StepByStepBackTrackingSolver(maze,stack,&end);
         }
 
         if (end) {
             DrawText("Labyrinthe résolu !", 200, 100, 50, GREEN);
+            timerRunning = false;
         }
+
+        char timerText[50];
+        sprintf(timerText, "Time: %.2f s", elapsedTime);
+        DrawText(timerText, 10, 10, 20, RAYWHITE);
 
         for (int i = 0; i < maze->height; i++) {
             for (int j = 0; j < maze->width; j++) {
