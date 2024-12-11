@@ -2,7 +2,6 @@
 #define MAZE_GENERATOR_H
 
 #include "maze.h"
-#include "mazeGenerator.h"
 
 typedef struct _Stack{
     Cell *cell;
@@ -22,5 +21,7 @@ void removeWall(Cell *current, Cell *neighbor, int direction);
 int chooseRandomDirection(int unvisitedDirection[]);
 
 void generateMaze(Maze *maze);
+
+int *getPossibleDirection(Maze *maze,int i,int j);
 
 #endif
