@@ -7,30 +7,37 @@
 
 
 int main(){
+    // define default size of the maze
     int mazeHeigth = 50;
     int mazeWidth = 50;
+
+    // initialize seed for randomness
     srand(time(NULL));
 
+    // initialize the maze
     Maze *maze = NULL;
     maze = initializeMaze(mazeHeigth,mazeWidth);
     generateMaze(maze);
+    // uncoment to see the maze in the terminal
     // printf("\nmaze generated : \n");
     // printMaze(maze);
     // printf("\nmaze solver : \n");
 
     // printMaze(maze);
 
-    // Initialisation
+    // Window initialisation
     const int screenWidth = 800;   // Largeur de la fenêtre
     const int screenHeight = 600; // Hauteur de la fenêtre
 
     InitWindow(screenWidth, screenHeight, "Fenêtre avec Raylib"); // Initialisation de la fenêtre
 
-    SetTargetFPS(60); // Définit le nombre d'images par seconde (FPS)
-    const int wallThickness = 1; // Épaisseur des murs
+    SetTargetFPS(60); // set the fps
+
+    // initialize the parameters of the maze
+    const int wallThickness = 1;
     int cellSize = 8;
-    const Color wallColor = WHITE; // Couleur des murs
-    const Color cellColor = GREEN; // Couleur pour les cellules contenant "x"
+    const Color wallColor = WHITE;
+    const Color cellColor = GREEN;
 
     Stack *stack = NULL;
 
@@ -43,15 +50,15 @@ int main(){
     bool timerRunning = false;
 
 
-    // Boucle principale
-    while (!WindowShouldClose()) { // Tant que l'utilisateur ne ferme pas la fenêtre
-        // Début du dessin
+    // Main boucle
+    while (!WindowShouldClose()) { // while user don't close the window
         BeginDrawing();
 
-        ClearBackground(BLACK); // Efface l'écran avec un fond blanc
+        ClearBackground(BLACK); // reset the window to a black one
 
-        DrawText("pour générer un nouveau labyrinthe \n(10x10 = A, 30x30 = Z , 50x50 = E , 100x100 = R ) . \nAppuyez sur S pour le resoudre ", 50, 50, 20, LIGHTGRAY); // Texte à l'écran
+        DrawText("pour générer un nouveau labyrinthe \n(10x10 = A, 30x30 = Z , 50x50 = E , 100x100 = R ) . \nAppuyez sur S pour le resoudre ", 50, 50, 20, LIGHTGRAY);
 
+        // diferents touch to change the maze and solve it (touch in qwerty but in the game in azerty)
         if (IsKeyPressed(KEY_Q)){
             DrawText("touche A appuyer",20,20,20,LIGHTGRAY);
             mazeHeigth = 10;
@@ -79,14 +86,10 @@ int main(){
             stack = NULL;
         }
 
-
-
-        // Vérifiez si l'utilisateur appuie sur la barre d'espace
         if (IsKeyPressed(KEY_E)) {
             mazeHeigth = 50;
             mazeWidth = 50;
             cellSize = 8;
-            // Appel de la fonction generateMaze
             free(maze);
             maze = initializeMaze(mazeHeigth,mazeWidth);
             generateMaze(maze);
@@ -97,8 +100,7 @@ int main(){
         }
 
         if (IsKeyPressed(KEY_S)) {
-            // Appel de la fonction generateMaze
-            // backTrackingSolver(maze);
+            // solve the maze
             solving = 1;
             timerRunning = true;
             startTime = GetTime();
@@ -110,7 +112,6 @@ int main(){
             mazeHeigth = 100;
             mazeWidth = 100;
             cellSize = 4;
-            // Appel de la fonction generateMaze
             free(maze);
             maze = initializeMaze(mazeHeigth,mazeWidth);
             generateMaze(maze);
@@ -118,10 +119,6 @@ int main(){
             end = 0;
             freeStack(stack);
             stack = NULL;
-        }
-
-        if (IsKeyPressed(KEY_Z)){
-            solving = 1;
         }
 
         if (timerRunning) {
@@ -137,10 +134,12 @@ int main(){
             timerRunning = false;
         }
 
+        // print the timmer
         char timerText[50];
         sprintf(timerText, "Time: %.2f s", elapsedTime);
         DrawText(timerText, 10, 10, 20, RAYWHITE);
 
+        // print the maze
         for (int i = 0; i < maze->height; i++) {
             for (int j = 0; j < maze->width; j++) {
                 int x = j * cellSize;
@@ -154,7 +153,7 @@ int main(){
                     DrawRectangle(x + 225, y + 150, wallThickness, cellSize, wallColor); // Mur de gauche
                 }
 
-                // Dessiner les cellules avec "x" en vert
+                // draw in green the cell where the solver think it's the best path
                 if (maze->mazeTab[i][j].value[0] == 'x') {
                     DrawRectangle(x + wallThickness + 225, y + wallThickness + 150,
                                   cellSize - wallThickness * 2,
@@ -163,7 +162,7 @@ int main(){
             }
         }
 
-        // Dessiner les murs extérieurs
+        // draw extern wall
         for (int i = 0; i < maze->width; i++) {
             int x = i * cellSize;
             int y = maze->height * cellSize;
@@ -175,13 +174,12 @@ int main(){
             DrawRectangle(x - wallThickness + 225, y + 150, wallThickness, cellSize, wallColor); // Mur de droite
         }
 
-        // Fin du dessin
         EndDrawing();
     }
 
-    // Fermeture et nettoyage
-    CloseWindow(); // Ferme la fenêtre et libère les ressources
+    // clear the memory and close the window
+    CloseWindow();
     free(maze);
     freeStack(stack);
-    return 1;
+    return EXIT_SUCCESS;
 }

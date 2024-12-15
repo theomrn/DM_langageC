@@ -12,7 +12,7 @@ include(FetchContent)
 FetchContent_Declare(
 raylib
 DOWNLOAD_EXTRACT_TIMESTAMP OFF
-URL https://github.com/raysan5/raylib/archive/refs/tags/$%7BRAYLIB_VERSION%7D.tar.gz
+URL https://github.com/raysan5/raylib/archive/refs/tags/${RAYLIB_VERSION}.tar.gz
 )
 FetchContent_GetProperties(raylib)
 if (NOT raylib_POPULATED) # Have we downloaded raylib yet?

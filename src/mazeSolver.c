@@ -2,21 +2,11 @@
 #include <stdio.h>
 #include "../includes/mazeSolver.h"
 
-void printStack(Stack *stack){
-    Stack *cell = stack;
-    int i = 0;
-    while (cell->next){
-        printf("   index : %d \n",i);
-        printf("   visited : %d \n",cell->cell->visited);
-        cell = cell->next;
-        i++;
-    }
-}
-
 /*
  * solve the maze using backtracking algorithm
- * input : maze
- * output : Ø
+ * input : maze not solve
+ * output : no output but change the maze adding x in the path to the solution : this function return the maze with the solution in one call
+ * not used in the program but can be use if you don't want to see the program solving the maze and see just the result
  */
 void backTrackingSolver(Maze *maze){
     int i = 0, j = 0;
@@ -98,45 +88,50 @@ void backTrackingSolver(Maze *maze){
     freeStack(stack); // free memory allocated for the stack
 }
 
+/*
+ * fucntion that solve the maze : use the same algorithm than the previous fucntion but does it one step at the time
+ * so it get a stack in input and output
+ * it also has a "end" parameter to knwow when the program is solved
+*/
 Stack* StepByStepBackTrackingSolver(Maze *maze, Stack *stack, int *end) {
     int i, j;
     Cell *current;
 
-    // Initialisation de la pile si elle est NULL (premier appel)
+    // initialisation of the stack (first call)
     if (!stack) {
         stack = (Stack *)malloc(sizeof(Stack));
         if (!stack) {
             perror("Erreur d'allocation de la pile");
             exit(EXIT_FAILURE);
         }
-        stack->next = NULL; // Initialiser la pile vide
-        current = &maze->mazeTab[0][0]; // Commencer au point de départ
+        stack->next = NULL;
+        current = &maze->mazeTab[0][0]; // start at 0 0
         i = 0;
         j = 0;
-        current->visited = 1; // Marquer comme visitée
-        current->value = "x"; // Marquer comme faisant partie du chemin
-        push(&stack, current); // Ajouter la cellule de départ à la pile
-        return stack; // Retourner après cette première étape
+        current->visited = 1;
+        current->value = "x";
+        push(&stack, current);
+        return stack;
     }
 
-    // Sinon, dépiler pour obtenir la cellule courante
+    // else pop the stack
     current = pop(&stack);
     if (!current) {
-        *end = 1; // Si la pile est vide, la résolution est terminée
+        *end = 1;
         return stack;
     }
 
     i = current->i;
     j = current->j;
 
-    // Vérifier si on a atteint la fin du labyrinthe
+    // check if the maze is solved
     if (i == maze->height - 1 && j == maze->width - 1) {
-        *end = 1; // Marquer que la fin est atteinte
-        current->value = "x"; // Marquer la cellule finale
+        *end = 1;
+        current->value = "x"; // mark the last cell
         return stack;
     }
 
-    // Vérifier les voisins non visités
+    // chzeck unvisited neighbor
     int unvisitedDirection[5] = {0, 0, 0, 0, 0};
     if ((i + 1) < maze->height && !maze->mazeTab[i + 1][j].visited && !maze->mazeTab[i + 1][j].north) {
         unvisitedDirection[0] = 1; // Bas
@@ -155,13 +150,13 @@ Stack* StepByStepBackTrackingSolver(Maze *maze, Stack *stack, int *end) {
         unvisitedDirection[4]++;
     }
 
-    // Si des voisins non visités existent
+    // if there is univisited neighbor
     if (unvisitedDirection[4] > 0) {
-        // Choisir une direction aléatoire parmi les directions possibles
+        // choose one possible direction
         int direction = chooseRandomDirection(unvisitedDirection);
         Cell *neighbor = NULL;
 
-        // Déterminer la cellule voisine en fonction de la direction
+        // choose a direction
         switch (direction) {
             case 0: // Bas
                 neighbor = &maze->mazeTab[i + 1][j];
@@ -177,17 +172,16 @@ Stack* StepByStepBackTrackingSolver(Maze *maze, Stack *stack, int *end) {
                 break;
         }
 
-        // Marquer la cellule voisine comme visitée et empiler
         if (neighbor) {
             neighbor->visited = 1;
-            neighbor->value = "x"; // Marquer comme faisant partie du chemin
-            push(&stack, current);  // Remettre la cellule actuelle
-            push(&stack, neighbor); // Empiler la cellule voisine
+            neighbor->value = "x";
+            push(&stack, current);
+            push(&stack, neighbor);
         }
     } else {
-        // Aucun voisin non visité, retirer cette cellule du chemin valide
-        current->value = " "; // Effacer la marque du chemin
+        // no unvisited neighbor : unmarked the cell of the path
+        current->value = " ";
     }
 
-    return stack; // Retourner l'état actuel de la pile
+    return stack;
 }

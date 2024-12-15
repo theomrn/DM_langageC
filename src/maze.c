@@ -42,6 +42,11 @@ Maze* initializeMaze(int mazeHeight,int mazeWidth){
     return maze;
 }
 
+/*
+ * function to print the maze in the terminal
+ * input : maze
+ * no output but print in the terminal
+*/
 void printMaze(Maze *maze){
     int i,j,k;
     for (i=0;i<maze->height;i++){

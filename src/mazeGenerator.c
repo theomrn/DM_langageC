@@ -97,51 +97,8 @@ int chooseRandomDirection(int unvisitedDirection[]){
     return result;
 }
 
-int *getPossibleDirection(Maze *maze,int i,int j){
-    int *possibleDirection = (int *)malloc(4*sizeof(int));
-    if (!possibleDirection){
-        perror("erreur alocation mémoire possible direction");
-        exit(EXIT_FAILURE);
-    }
-    Cell *cell = &maze->mazeTab[i][j];
-    if ((i + 1) < maze->height){
-        if (maze->mazeTab[i+1][j].north){
-            possibleDirection[0] = 1;
-        }
-        else {
-            possibleDirection[0] = 0;
-        }
-    }
-    if ((i - 1) >= 0){
-        if (maze->mazeTab[i-1][j].north){
-            possibleDirection[1] = 1;
-        }
-        else {
-            possibleDirection[1] = 0;
-        }
-    }
-    if ((j+1) < maze->width){
-        if (maze->mazeTab[i][j+1].north){
-            possibleDirection[2] = 1;
-        }
-        else {
-            possibleDirection[2] = 0;
-        }
-    }
-    if ((j-1) >= 0){
-        if (maze->mazeTab[i][j-1].north){
-            possibleDirection[3] = 1;
-        }
-        else {
-            possibleDirection[3] = 0;
-        }
-    }
-
-    return possibleDirection;
-}
-
 /*
- * generate a perfect maze with backtracking algorithm
+ * generate a perfect maze with backtracking algorithm ( only one solution )
  * input : maze
  * output : Ø
  */
@@ -226,14 +183,3 @@ void generateMaze(Maze *maze){
         }
     }
 }
-/*
-int main(){
-    Maze *maze = NULL;
-    maze = initializeMaze(maze);
-    printMaze(maze);
-    generateMaze(maze);
-    printf("\nmaze generated : \n");
-    printMaze(maze);
-    free(maze);
-    return 0;
-}*/
